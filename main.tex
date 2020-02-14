@@ -1,2 +1,72 @@
 \chapter{Introduction}
 
+\section{Background}
+
+It is generally useful for software to be able to automatically determine the
+capabilities of the hardware it is running on. In addition external debuggers
+need to know the same information. Instead of having each RISC-V extension
+specify their own discovery mechanism, this document attempts to specify a
+single format and access method that can be used to describe any feature
+software and debuggers might want to be aware of.
+
+\section{Goals}
+
+\begin{steps}{The task group will define:}
+\item A machine-readable format for system descriptions. It's intended to be
+present in hardware, so software and debuggers can read this description.
+\item A mechanism for software and debuggers to access the system description,
+if it exists.
+\item A human-readable format for system descriptions. It's intended to be used
+to talk about the system description in this document as well as other
+documentation, to help designers write a system description, and for debuggers
+to display the system description to their users.
+\item Software that translates back and forth between the machine-readable and
+human-readable format.
+\end{steps}
+
+\section{Use Cases}
+
+\subsection{External Debuggers}
+
+When an external debugger connects to a system, it would like to discover as
+much as possible about that system in as little time as possible. Some of this
+is merely to show the user (e.g. a manufacturer name), while other features are
+critical to the user (e.g. XLEN), and other features determine what kind of
+operations the user can perform (e.g. supported hardware trigger types). Most
+of these are already discoverable, although many require writing a value and
+checking the result to see whether support exists.
+
+In the case of hardware trigger types there are so many possible combinations
+of options that this is prohibitive. In other cases the software to detect all
+features is quite complex. When some harts are powered down, no discovery is
+possible on them at all. Supplying a system description can solve all these
+problems.
+
+\chapter{Machine-Readable Format}
+
+\begin{steps}{Ideas:}
+\item Fully custom, along the lines of
+    \url{https://github.com/riscv/riscv-debug-spec/pull/450/files#diff-9cee87c1f0feb10d9e3e9b2bfad92985R380}
+\item Semi-custom, using CBOR
+\item ...
+\end{steps}
+
+\chapter{Human-Readable Format}
+
+\begin{steps}{Ideas:}
+\item Take the binary format, and expand constants to strings, add whitespace,
+keeping the mapping as close to 1:1 as possible.
+\item XML
+\item JSON
+\item ...
+\end{steps}
+
+\chapter{Access Method}
+
+\begin{steps}{Ideas:}
+\item A CSR contains the base address of where the structure can be accessed on
+the system bus
+\item A CSR address/data pair can be used to access the structure. (Write index
+to the address CSR, then read from the data CSR.)
+\item ...
+\end{steps}
