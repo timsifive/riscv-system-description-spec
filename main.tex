@@ -2,7 +2,7 @@
 
 \section{Background}
 
-It is generally useful for software to be able to automatically determine the
+It is generally useful for software to be able to programmatically determine the
 capabilities of the hardware it is running on. In addition external debuggers
 need to know the same information. Instead of having each RISC-V extension
 specify their own discovery mechanism, this document attempts to specify a
@@ -13,7 +13,8 @@ software and debuggers might want to be aware of.
 
 \begin{steps}{The task group will define:}
 \item A machine-readable format for system descriptions. It's intended to be
-present in hardware, so software and debuggers can read this description.
+present in hardware when power on, so software and debuggers can read this
+description. 
 \item A mechanism for software and debuggers to access the system description,
 if it exists.
 \item A human-readable format for system descriptions. It's intended to be used
@@ -22,6 +23,17 @@ documentation, to help designers write a system description, and for debuggers
 to display the system description to their users.
 \item Software that translates back and forth between the machine-readable and
 human-readable format.
+\item Defining the equivalent syntax and format of system description in external 
+industrial standards. Software translates system description into the corresponding 
+definitions according to the external specifications for system boot process later 
+on.
+
+\begin{commentary}
+The external industrial standards refer to Device Tree, SMBIOS, ACPI and etc. 
+specifications which are defined for different computer segments. These industrial 
+specifications are typically used to describe hardware features and configurations.
+\end{commentary}
+
 \end{steps}
 
 \section{Use Cases}
@@ -41,6 +53,34 @@ of options that this is prohibitive. In other cases the software to detect all
 features is quite complex. When some harts are powered down, no discovery is
 possible on them at all. Supplying a system description can solve all these
 problems.
+
+\subsection{System Firmware}
+Supplying system descriptions to system firmware for discovering processor 
+core features and platform configurations. Based on system descriptions, firmware 
+can determine the hardware capabilities in programmatic access method 
+(Section~\ref{sec:AccessMethod}) and configure hardware accordingly. This instead 
+of testing on specific hardware feature and handling the fail condition or customize 
+system firmware in order to compliant with particular hardware features.
+
+Most of the use cases are determination of availability of optional hardware 
+features such as physical memory protection (PMP) unit, enhanced features of PMP,
+the availability of Core Local Interrupt Controller (CLIC), Core Local interruptor 
+(CLINT) memory map any future optional core features. The settings of Platform-Level 
+Interrupt Controller (PLIC), availability of platform Real time Clock (RTC),
+Reset mechanism and etc. are also in the scope of system descriptions for platforms.
+
+System firmware may convert system descriptions into other representations which are 
+defined in the external industrial standards (Appendix~\ref{sec:ExternalIndustrialStandard})
+and passed to the subsequent boot processes.
+
+\begin{commentary}
+The system firmware stated herein refer to the startup software which is executed 
+when system power on. The system firmware initializes hardware configuration and 
+builds up firmware services or data structures for booting up system to OS. The typical
+system firmware such as uboot for embedded systems, BIOS for PCs or other firmware 
+frameworks.
+
+\end{commentary}
 
 \chapter{Machine-Readable Format}
 
@@ -62,6 +102,7 @@ keeping the mapping as close to 1:1 as possible.
 \end{steps}
 
 \chapter{Access Method}
+\label{sec:AccessMethod}
 
 \begin{steps}{Ideas:}
 \item A CSR contains the base address of where the structure can be accessed on
