@@ -66,10 +66,10 @@ A system description is an efficient alternative to testing for specific
 hardware feature (including handling failures) or customizing system firmware
 for the specific system it will run on.
 
-Often system firmware will convert the system description into another
-representation which is defined in the external industrial standards
-(Appendix~\ref{sec:ExternalIndustrialStandard}) and passed to the subsequent
-boot processes.
+Often system firmware will take the information it has learned from the system
+description as well as through other methods, and encode it into a different
+industry-standard data structure (like Devicetree).  This structure is then
+passed to the subsequent boot process.
 
 \begin{commentary}
 The system firmware stated herein refer to the startup software which is executed
