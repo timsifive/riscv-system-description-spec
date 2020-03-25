@@ -2,32 +2,40 @@
 
 \section{Background}
 
-It is generally useful for software to be able to programmatically determine the
-capabilities of the hardware it is running on. In addition external debuggers
-need to know the same information. Instead of having each RISC-V extension
-specify their own discovery mechanism, this document attempts to specify a
-single format and access method that can be used to describe any feature
-software and debuggers might want to be aware of.
+It is generally useful for software to be able to programmatically determine
+the capabilities of the hardware it is running on. External debuggers need to
+know the same information. RISC-V extensions mostly use CSRs for this
+information, but that is not flexible enough for some kinds of data like
+hardware breakpoint capabilities, and cache hierarchy.
+
+This document specifies syntax, semantics, discovery method, and access method
+for a static data structure that can accommodate implementation parameters of
+RISC-V standards beyond what can be easily put into CSRs. The structure is
+called a Configuration Structure (CS).
 
 \section{Goals}
 
-\begin{steps}{The task group will define:}
-\item A machine-readable format for system descriptions. It's intended to be
-present in hardware and accessible at all times, so software and debuggers
-can read this description.
-\item A mechanism for software and debuggers to access the system description,
-if it exists.
-\item A human-readable format for system descriptions. It's intended to be used
-to talk about the system description in this document as well as other
-documentation, to help designers write a system description, and for debuggers
-to display the system description to their users.
-\item Software that translates back and forth between the machine-readable and
-human-readable format.
-\item The equivalent syntax and format of system description in external
-industrial standards (e.g. Devicetree, SMBIO, ACPI). It's intended to be used
-by software that translates system description into those formats as part of
-the system boot process.
+\begin{steps}{The task group will deliver:}
+\item A specification for a machine-readable format for the configuration
+    structure. It's intended to be easily accessible by M-mode software and
+    debuggers.
+\item A specification for a human-readable format for the configuration
+    structure. It's intended to be used to talk about the system description in
+    this document as well as other documentation, to help designers write a
+    configuration structure, and to display the configuration structure to
+    people.
+\item A software tool that translates back and forth between the
+    machine-readable and human-readable format.
+\item A specification for a method to discover and access, from M-mode
+    software, the machine-readable configuration structures.
 \end{steps}
+
+The configuration structure should be flexible enough that future task groups
+won’t feel the need to create another structure used to describe implementation
+parameters. Implementation parameters are details that a RISC-V specification
+explicitly leaves up to an implementation. This includes hart-specific details
+like the kinds of hardware triggers supported, as well as details that are
+outside harts such as the supported abstract debug commands.
 
 \section{Use Cases}
 
@@ -54,7 +62,8 @@ initializes hardware, and builds up firmware services or data structures for
 booting up system to OS. Examples are uboot for embedded systems, and BIOS for
 PCs.
 
-By accessing the system description (Section~\ref{sec:AccessMethod}), firmware
+Throuh a combination of checking CSRs and
+accessing the system description (Section~\ref{sec:AccessMethod}), firmware
 can programmatically determine the hardware capabilities and configure hardware
 accordingly.  These hardware capabilities can include availability and
 implemented features of Physical Memory Protection (PMP), Core Local Interrupt
@@ -62,8 +71,8 @@ Controller (CLIC), Core Local Interruptor (CLINT), memory map, Platform-Level
 Interrupt Controller (PLIC), Real Time Clock (RTC), reset mechanism, and any
 future optional core features.
 
-A system description is an efficient alternative to testing for specific
-hardware feature (including handling failures) or customizing system firmware
+The Configuration Structure is an efficient alternative to testing for specific
+hardware features (including handling failures) or customizing system firmware
 for the specific system it will run on.
 
 Often system firmware will take the information it has learned from the system
@@ -72,8 +81,8 @@ industry-standard data structure (like Devicetree).  This structure is then
 passed to the subsequent boot process.
 
 \begin{commentary}
-The system firmware stated herein refer to the startup software which is executed
-when system power on. The system firmware initializes hardware configuration and
+The system firmware mentioned refers to startup software which is executed
+when the system powers on. The system firmware initializes hardware configuration and
 builds up firmware services or data structures for booting up system to OS. The typical
 system firmware such as uboot for embedded systems, BIOS for PCs or other firmware
 frameworks.
